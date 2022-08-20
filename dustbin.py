@@ -6,14 +6,6 @@ will be assigned random values.
 from globals import *
 
 class Dustbin:
-	# Good old constructor
-	def __init__ (self, x = None, y = None):
-		if x == None and y == None:
-			self.x = random.randint(0, xMax)
-			self.y = random.randint(0, yMax)
-		else:
-			self.x = x
-			self.y = y
 
 	def getX(self):
 		return self.x
@@ -21,16 +13,26 @@ class Dustbin:
 	def getY(self):
 		return self.y
 
-	# Returns distance to the dustbin passed as argument
+	def __init__ (self, x = None, y = None):
+		self.x = x
+		self.y = y
+
+		if y == None and x == None:
+			self.y = random.randint(0, yMax)
+			self.x = random.randint(0, xMax)
+
+
+
+
+	# Returns distance to vertex passed in as arg
 	def distanceTo(self, db):
-		xDis = abs(self.getX() - db.getX())
-		yDis = abs(self.getY() - db.getY())
-		dis = math.sqrt((xDis*xDis) + (yDis*yDis))
-		return dis
+		p = self.getX(), self.getY()
+		q = db.getX(), db.getY()
+		return math.dist(p,q)
 
 	# Gives string representation of the Object with coordinates
 	def toString(self):
-		s = '(' + str(self.getX()) + ',' + str(self.getY()) + ')'
+		s = '(' + str(self.getX()) + ', ' + str(self.getY()) + ')'
 		return s
 
 	# Check if coordinates have been assigned or not

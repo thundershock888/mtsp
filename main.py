@@ -1,5 +1,4 @@
 import matplotlib;
-import numpy as np
 import time as timer
 
 matplotlib.use("TkAgg")
@@ -7,34 +6,37 @@ from galogic import *
 from route import *
 import matplotlib.pyplot as plt
 import progressbar
-from matplotlib.animation import FuncAnimation
+
 
 pbar = progressbar.ProgressBar()
 
 startTime = timer.time()
 
 # Add Dustbins
+
 for i in range(numNodes):
     RouteManager.addDustbin(Dustbin())
 
-random.seed(seedValue)
-routeData = []  # Fittest value (distance)
-yaxis = []  # Fittest value (distance)
 xaxis = []  # Generation count
-
+yaxis = []  # Fittest value (distance)
+routeData = []  # Fittest value (distance)
+random.seed(seedValue)
 pop = Population(populationSize, True)
 globalRoute = pop.getFittest()
+
 print('Initial minimum distance: ' + str(globalRoute.getDistance()))
 
 # Start evolving
 for i in pbar(range(populationSize)):
     pop = GA.evolvePopulation(pop)
     localRoute = pop.getFittest()
-    if globalRoute.getDistance() > localRoute.getDistance():
+
+    if(localRoute.getDistance() < globalRoute.getDistance()):
         globalRoute = localRoute
-    routeData.append(globalRoute)
-    yaxis.append(localRoute.getDistance())
+    routeData.append((globalRoute))
     xaxis.append(i)
+    yaxis.append(localRoute.getDistance())
+
 
 
 
@@ -53,7 +55,7 @@ fig2, ax = plt.subplots()
 x = []
 y = []
 
-# Enumerates each agent's path
+# Enumerates each agent's path, so we can plot it
 for salesman in range(numTrucks):
     for path in range(len(globalRoute.route[salesman])):
         x.append(globalRoute.getDustbin(salesman, path).getX())
@@ -78,22 +80,4 @@ ax.scatter(x, y)
 plt.show()
 
 
-# function that draws each frame of the animation
-def update(i):
-    x = []
-    y = []
-    for salesman in range(numTrucks):
-        for path in range(routeData[i].routeLengths[salesman]):
-            x.append(routeData[i].getDustbin(salesman, path).getX())
-            y.append(routeData[i].getDustbin(salesman, path).getY())
-            ax.annotate(str(path), xy=(routeData[i].getDustbin(salesman, path).getX(),
-                                       routeData[i].getDustbin(salesman, path).getY()))
 
-    ax.plot(x, y, label=salesman)
-
-    ax.clear()
-    ax.scatter(x, y, c="red")
-    ax.legend(loc='best')
-
-# ani = FuncAnimation(fig2, update, frames=populationSize, interval=500, repeat=True)
-# plt.show()
